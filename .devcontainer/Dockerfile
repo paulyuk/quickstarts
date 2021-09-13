@@ -3,8 +3,7 @@
 # Licensed under the MIT License.
 # ------------------------------------------------------------
 
-FROM mcr.microsoft.com/vscode/devcontainers/universal:1.4.0-focal
-
+FROM mcr.microsoft.com/vscode/devcontainers/python:dev-3.9-bullseye
 # Copy custom first notice message.
 COPY first-run-notice.txt /tmp/staging/
 RUN sudo mv -f /tmp/staging/first-run-notice.txt /usr/local/etc/vscode-dev-containers/ \
@@ -22,3 +21,30 @@ RUN wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh
 
 # Install mechanical-markdown for quickstart validations
 RUN pip install mechanical-markdown
+
+# [Option] Install zsh
+ARG INSTALL_ZSH="true"
+# [Option] Upgrade OS packages to their latest versions
+ARG UPGRADE_PACKAGES="false"
+# [Option] Enable non-root Docker access in container
+ARG ENABLE_NONROOT_DOCKER="true"
+# [Option] Use the OSS Moby Engine instead of the licensed Docker Engine
+ARG USE_MOBY="true"
+
+# Install needed packages and setup non-root user. Use a separate RUN statement to add your
+# own dependencies. A user of "automatic" attempts to reuse an user ID if one already exists.
+ARG USERNAME=automatic
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+COPY library-scripts/*.sh /tmp/library-scripts/
+RUN apt-get update \
+    && /bin/bash /tmp/library-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "true" "true" \
+    # Use Docker script from script library to set things up
+    && /bin/bash /tmp/library-scripts/docker-in-docker-debian.sh "${ENABLE_NONROOT_DOCKER}" "${USERNAME}" "${USE_MOBY}" \
+    # Clean up
+    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
+    
+VOLUME [ "/var/lib/docker" ]
+
+ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
+CMD [ "sleep", "infinity" ]
