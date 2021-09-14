@@ -59,5 +59,8 @@ ENV PATH "${JAVA_HOME}/bin:${PATH}"
 RUN curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash - \
     && sudo apt install nodejs
 
+# Install GoLang
+RUN sudo apt install golang -y
+
 ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
 CMD [ "sleep", "infinity" ]
