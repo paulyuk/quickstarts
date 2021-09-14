@@ -62,5 +62,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash - \
 # Install GoLang
 RUN sudo apt install golang -y
 
+# Install .NET 5
+# TODO
+
 ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
 CMD [ "sleep", "infinity" ]
