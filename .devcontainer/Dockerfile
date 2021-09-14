@@ -55,5 +55,9 @@ RUN mkdir "${INSTALL_PATH}" \
 ENV JAVA_HOME "${INSTALL_PATH}/jdk-16.0.2+7"
 ENV PATH "${JAVA_HOME}/bin:${PATH}"
 
+# Install Node.Js and NPM for Javascript apps
+RUN curl -fsSL https://deb.nodesource.com/setup_current.x | sudo -E bash - \
+    && sudo apt install nodejs
+
 ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
 CMD [ "sleep", "infinity" ]
