@@ -46,5 +46,14 @@ RUN apt-get update \
     
 VOLUME [ "/var/lib/docker" ]
 
+# Install openjdk11 for Java apps
+ENV INSTALL_PATH /usr/lib/jvm
+RUN wget https://aka.ms/download-jdk/microsoft-jdk-16.0.2.7.1-linux-aarch64.tar.gz
+RUN mkdir "${INSTALL_PATH}" \
+    && tar xzf microsoft-jdk-16.0.2.7.1-linux-aarch64.tar.gz -C "${INSTALL_PATH}"
+#COPY --from=mcr.microsoft.com/openjdk/jdk:11-ubuntu $JAVA_HOME $JAVA_HOME
+ENV JAVA_HOME "${INSTALL_PATH}/jdk-16.0.2+7"
+ENV PATH "${JAVA_HOME}/bin:${PATH}"
+
 ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
 CMD [ "sleep", "infinity" ]
