@@ -166,10 +166,36 @@ ENV GOPATH /go
 ENV PATH $GOPATH/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
-# Install .NET 5
-# TODO
+# Install .NET 5 runtime
+ENV \
+    # Unset ASPNETCORE_URLS from aspnet base image
+    ASPNETCORE_URLS= \
+    # Do not generate certificate
+    DOTNET_GENERATE_ASPNET_CERTIFICATE=false \
+    # Do not show first run text
+    DOTNET_NOLOGO=true \
+    # SDK version
+    DOTNET_SDK_VERSION=5.0.401 \
+    # Enable correct mode for dotnet watch (only mode supported in a container)
+    DOTNET_USE_POLLING_FILE_WATCHER=true \
+    # Unset Logging__Console__FormatterName from aspnet base image
+    Logging__Console__FormatterName= \
+    # Skip extraction of XML docs - generally not useful within an image/container - helps performance
+    NUGET_XMLDOC_MODE=skip \
+    # PowerShell telemetry for docker image usage
+    POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-DotnetSDK-Debian-11
 
-# Install .NET 6 preview
+ENV DOTNET_FILE dotnet.tar.gz
+ENV DOTNET_ROOT /usr/share/dotnet
+RUN curl -SL --output "$DOTNET_FILE" https://download.visualstudio.microsoft.com/download/pr/2ce6cf91-6aff-4565-87df-d20212418009/e3a924fa1192637dcd7379c1109e14e0/aspnetcore-runtime-5.0.10-linux-arm64.tar.gz
+RUN dotnet_sha512='e86dd5b26e5add2f35c3a029c78e3c447755a319c105d371da297f66db5eff260f3f55ccf23e508e9a33536876708ac2e358dc62a4a28518f88df3a9131adb01'
+RUN echo "$dotnet_sha512  $DOTNET_FILE"
+RUN mkdir -p "$DOTNET_ROOT" \
+    && tar -C "$DOTNET_ROOT" -xzf "$DOTNET_FILE" \
+    && rm "$DOTNET_FILE" \
+	&& echo "unpacked to ${DOTNET_ROOT}"
+
+# Install .NET 6 SDK & runtime RC preview
 ENV \
     # Unset ASPNETCORE_URLS from aspnet base image
     ASPNETCORE_URLS= \
