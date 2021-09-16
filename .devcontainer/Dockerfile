@@ -166,7 +166,7 @@ ENV GOPATH /go
 ENV PATH $GOPATH/bin:$PATH
 RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 777 "$GOPATH"
 
-# Install .NET 5 runtime
+# Install .NET Core 3.1.x runtime
 ENV \
     # Unset ASPNETCORE_URLS from aspnet base image
     ASPNETCORE_URLS= \
@@ -175,7 +175,7 @@ ENV \
     # Do not show first run text
     DOTNET_NOLOGO=true \
     # SDK version
-    DOTNET_SDK_VERSION=5.0.401 \
+    DOTNET_SDK_VERSION=3.1.19 \
     # Enable correct mode for dotnet watch (only mode supported in a container)
     DOTNET_USE_POLLING_FILE_WATCHER=true \
     # Unset Logging__Console__FormatterName from aspnet base image
@@ -183,10 +183,23 @@ ENV \
     # Skip extraction of XML docs - generally not useful within an image/container - helps performance
     NUGET_XMLDOC_MODE=skip \
     # PowerShell telemetry for docker image usage
-    POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-DotnetSDK-Debian-11
+    POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-DotnetSDK-Debian-11 \
+	# Set download filename and install path
+	DOTNET_FILE=dotnet.tar.gz \
+	DOTNET_ROOT=/usr/share/dotnet
+RUN curl -SL --output "$DOTNET_FILE" https://download.visualstudio.microsoft.com/download/pr/05c0293f-fabb-4d0a-926b-34f28c3ae4f0/b6666e2c4838ff24fb27447ee8437291/aspnetcore-runtime-3.1.19-linux-arm64.tar.gz
+RUN dotnet_sha512='4cba9b43a9beb977bb50c290c0e7cbbf42664538609079dd1bc0e925a0cc4a1f76748492d4d0d402610ae910e878449bab5d797a9f12e63399585b11f9bfbee9'
+RUN echo "$dotnet_sha512  $DOTNET_FILE"
+RUN mkdir -p "$DOTNET_ROOT" \
+    && tar -C "$DOTNET_ROOT" -xzf "$DOTNET_FILE" \
+    && rm "$DOTNET_FILE" \
+	&& echo "unpacked to ${DOTNET_ROOT}"
 
-ENV DOTNET_FILE dotnet.tar.gz
-ENV DOTNET_ROOT /usr/share/dotnet
+# Install .NET 5 runtime
+ENV \
+    # Alter SDK version
+    DOTNET_SDK_VERSION=5.0.401
+
 RUN curl -SL --output "$DOTNET_FILE" https://download.visualstudio.microsoft.com/download/pr/2ce6cf91-6aff-4565-87df-d20212418009/e3a924fa1192637dcd7379c1109e14e0/aspnetcore-runtime-5.0.10-linux-arm64.tar.gz
 RUN dotnet_sha512='e86dd5b26e5add2f35c3a029c78e3c447755a319c105d371da297f66db5eff260f3f55ccf23e508e9a33536876708ac2e358dc62a4a28518f88df3a9131adb01'
 RUN echo "$dotnet_sha512  $DOTNET_FILE"
@@ -197,25 +210,9 @@ RUN mkdir -p "$DOTNET_ROOT" \
 
 # Install .NET 6 SDK & runtime RC preview
 ENV \
-    # Unset ASPNETCORE_URLS from aspnet base image
-    ASPNETCORE_URLS= \
-    # Do not generate certificate
-    DOTNET_GENERATE_ASPNET_CERTIFICATE=false \
-    # Do not show first run text
-    DOTNET_NOLOGO=true \
-    # SDK version
-    DOTNET_SDK_VERSION=6.0.100-rc.1.21458.32 \
-    # Enable correct mode for dotnet watch (only mode supported in a container)
-    DOTNET_USE_POLLING_FILE_WATCHER=true \
-    # Unset Logging__Console__FormatterName from aspnet base image
-    Logging__Console__FormatterName= \
-    # Skip extraction of XML docs - generally not useful within an image/container - helps performance
-    NUGET_XMLDOC_MODE=skip \
-    # PowerShell telemetry for docker image usage
-    POWERSHELL_DISTRIBUTION_CHANNEL=PSDocker-DotnetSDK-Debian-11
+    # Alter SDK version
+    DOTNET_SDK_VERSION=6.0.100-rc.1.21458.32 
 
-ENV DOTNET_FILE dotnet.tar.gz
-ENV DOTNET_ROOT /usr/share/dotnet
 ENV PATH "${DOTNET_ROOT}:${PATH}"
 RUN curl -SL --output "$DOTNET_FILE" https://download.visualstudio.microsoft.com/download/pr/18b0aaba-3d6c-4051-8694-eac3439d070d/a2848819e18f2e84657ddd4c98aee02d/dotnet-sdk-6.0.100-rc.1.21458.32-linux-arm64.tar.gz
 RUN dotnet_sha512='b27bf9be0198f7fda3eee514c86758665b144e6fc7d2f3e43223e65f80dfc85a43bbc9f61a5e8dbda2e10ec193fafd2c208e64e2e98358f0c80ef6e349bd7c33'
