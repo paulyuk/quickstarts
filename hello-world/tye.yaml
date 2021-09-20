@@ -1,0 +1,31 @@
+# tye application configuration file
+# read all about it at https://github.com/dotnet/tye
+#
+# when you've given us a try, we'd love to know what you think:
+#    https://aka.ms/AA7q20u
+#
+# define global settings here
+name: hello-world # application name
+extensions:
+  - name: dapr
+#    components-path: ./components/
+# registry: exampleuser # dockerhub username or container registry hostname
+
+# define multiple services here
+services:
+- name: nodeapp
+  executable: node  # path to an executable (relative to this file)
+  args: app.js # arguments to pass to the process
+  # replicas: 5 # number of times to launch the application
+  #workingDirectory: ./node/
+  bindings: # optional array of bindings (ports, connection strings)
+  - port: 3000 # number port of the binding
+    protocol: http
+- name: pythonapp
+  executable: python3  # path to an executable (relative to this file)
+  args: app.py # arguments to pass to the process
+  #workingDirectory: ./processor/
+  bindings: # optional array of bindings (ports, connection strings)
+    - port: 5000 # number port of the binding
+  #    protocol: http
+  
