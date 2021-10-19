@@ -27,7 +27,7 @@ build_python:
 	cd ./python && pip3 install -r requirements.txt
 
 build_node:
-	cd ./node && npm install && npm run buildclient
+	cd ./node && npm install
 
 build_react:
-	cd ./react-calculator && npm install
+	cd ./react-calculator && npm install && npm run buildclient
