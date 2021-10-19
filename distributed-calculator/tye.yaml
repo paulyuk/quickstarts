@@ -1,0 +1,51 @@
+# tye application configuration file
+# read all about it at https://github.com/dotnet/tye
+#
+# when you've given us a try, we'd love to know what you think:
+#    https://aka.ms/AA7q20u
+#
+# define global settings here
+name: distributed-calculator # application name
+
+# define multiple services here
+services:
+- name: addapp
+  executable: dapr  # path to an executable (relative to this file)
+  args: run --app-id addapp --app-port 6000 --dapr-http-port 3503 ./app # arguments to pass to the process
+  # replicas: 5 # number of times to launch the application
+  workingDirectory: ./go/
+  bindings: # optional array of bindings (ports, connection strings)
+  - port: 3503 # number port of the binding
+    protocol: http
+- name: subtractapp
+  executable: dapr  # path to an executable (relative to this file)
+  args: run --app-id subtractapp --app-port 7000 --dapr-http-port 3504 dotnet Subtract.dll # arguments to pass to the process
+  workingDirectory: ./csharp/bin/Release/netcoreapp3.1/
+  bindings: # optional array of bindings (ports, connection strings)
+  - port: 7000 # number port of the binding ##TODO: investigate why this cannot use Dapr port
+    protocol: http
+- name: multiplyapp
+  executable: dapr  # path to an executable (relative to this file)
+  args: run --app-id multiplyapp --app-port 5000 --dapr-http-port 3501 flask run # arguments to pass to the process
+  # replicas: 5 # number of times to launch the application
+  workingDirectory: ./python/
+  bindings: # optional array of bindings (ports, connection strings)
+  - port: 3051 # number port of the binding
+    protocol: http
+- name: divideapp
+  executable: dapr  # path to an executable (relative to this file)
+  args: run --app-id divideapp --app-port 4000 --dapr-http-port 3502 node app.js # arguments to pass to the process
+  # replicas: 5 # number of times to launch the application
+  workingDirectory: ./node/
+  bindings: # optional array of bindings (ports, connection strings)
+  - port: 3052 # number port of the binding
+    protocol: http
+- name: frontendapp
+  executable: dapr  # path to an executable (relative to this file)
+  args: run --app-id frontendapp --app-port 8080 --dapr-http-port 3500 node server.js # arguments to pass to the process
+  # replicas: 5 # number of times to launch the application
+  workingDirectory: ./react-calculator/
+  bindings: # optional array of bindings (ports, connection strings)
+  - port: 8080 # number port of the binding
+    protocol: http
+ 
