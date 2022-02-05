@@ -2,8 +2,8 @@
 # Copyright (c) Microsoft Corporation and Dapr Contributors.
 # Licensed under the MIT License.
 # ------------------------------------------------------------
-
-FROM mcr.microsoft.com/vscode/devcontainers/python:dev-3.9-bullseye
+ARG VARIANT=3-bullseye
+FROM mcr.microsoft.com/vscode/devcontainers/python:${VARIANT}
 # Copy custom first notice message.
 COPY first-run-notice.txt /tmp/staging/
 RUN sudo mv -f /tmp/staging/first-run-notice.txt /usr/local/etc/vscode-dev-containers/ \
