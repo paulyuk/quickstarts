@@ -208,14 +208,14 @@ RUN mkdir -p "$DOTNET_ROOT" \
     && rm "$DOTNET_FILE" \
 	&& echo "unpacked to ${DOTNET_ROOT}"
 
-# Install .NET 6 SDK & runtime RC preview
+# Install .NET 6 SDK & runtime
 ENV \
     # Alter SDK version
-    DOTNET_SDK_VERSION=6.0.100-rc.1.21458.32 
+    DOTNET_SDK_VERSION=6.0.101
 
 ENV PATH "${DOTNET_ROOT}:${PATH}"
-RUN curl -SL --output "$DOTNET_FILE" https://download.visualstudio.microsoft.com/download/pr/18b0aaba-3d6c-4051-8694-eac3439d070d/a2848819e18f2e84657ddd4c98aee02d/dotnet-sdk-6.0.100-rc.1.21458.32-linux-arm64.tar.gz
-RUN dotnet_sha512='b27bf9be0198f7fda3eee514c86758665b144e6fc7d2f3e43223e65f80dfc85a43bbc9f61a5e8dbda2e10ec193fafd2c208e64e2e98358f0c80ef6e349bd7c33'
+RUN curl -SL --output "$DOTNET_FILE" https://download.visualstudio.microsoft.com/download/pr/d43345e2-f0d7-4866-b56e-419071f30ebe/68debcece0276e9b25a65ec5798cf07b/dotnet-sdk-6.0.101-linux-arm64.tar.gz
+RUN dotnet_sha512='04cd89279f412ae6b11170d1724c6ac42bb5d4fae8352020a1f28511086dd6d6af2106dd48ebe3b39d312a21ee8925115de51979687a9161819a3a29e270a954'
 RUN echo "$dotnet_sha512  $DOTNET_FILE"
 RUN mkdir -p "$DOTNET_ROOT" \
     && tar -C "$DOTNET_ROOT" -xzf "$DOTNET_FILE" \
