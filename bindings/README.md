@@ -104,11 +104,11 @@ output_match_mode: substring
 expected_stdout_lines: 
   - "You're up and running! Both Dapr and your app logs will appear here."
   - "== APP == Hello from Kafka!"
-  - "== APP == { orderId: 1 }"
+  - "== APP == { orderId:"
   - "== APP == Hello from Kafka!"
-  - "== APP == { orderId: 2 }"
+  - "== APP == { orderId:"
   - "== APP == Hello from Kafka!"
-  - "== APP == { orderId: 3 }"
+  - "== APP == { orderId:"
   - "== APP == Hello from Kafka!"
   - "Exited Dapr successfully"
   - "Exited App successfully"
@@ -154,9 +154,7 @@ output_match_mode: substring
 expected_stdout_lines: 
   - "You're up and running! Both Dapr and your app logs will appear here."
   - "== APP == {'data': {'orderId': 1}, 'operation': 'create'}"
-  - "== APP == <Response [204]>"
   - "== APP == {'data': {'orderId': 2}, 'operation': 'create'}"
-  - "== APP == <Response [204]>"
   - "== APP == {'data': {'orderId': 3}, 'operation': 'create'}"
   - "== APP == <Response [204]>"
   - "Exited Dapr successfully"
@@ -232,7 +230,7 @@ docker-compose -f ./docker-compose-single-kafka.yml down
 <!-- STEP
 name: Install Kafka
 sleep: 15
-timeout_seconds: 120
+timeout_seconds: 300
 -->
 
 ```bash
@@ -321,10 +319,10 @@ Look at the Python app logs by running:
 
 <!-- STEP
 name: Read Python Logs
+output_match_mode: substring
 expected_stdout_lines:
-  - "{'data': {'orderId': 10}, 'operation': 'create'}"
-  - "<Response [204]>"
-  - "{'data': {'orderId': 11}, 'operation': 'create'}"
+  - "{'data': {'orderId': " 
+  - "{'data': {'orderId': "
   - "<Response [204]>"
 -->
 
@@ -361,11 +359,12 @@ Look at the Node app logs by running:
 
 <!-- STEP
 name: Read Node Logs
+output_match_mode: substring
 expected_stdout_lines:
   - Hello from Kafka!
-  - "{ orderId: 16 }"
+  - "{ orderId: "
   - Hello from Kafka!
-  - "{ orderId: 17 }"
+  - "{ orderId: "
 -->
 
 ```bash

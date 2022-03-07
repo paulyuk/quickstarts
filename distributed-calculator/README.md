@@ -80,15 +80,15 @@ sleep: 2
 
 2. Subtract App - Open a terminal window and navigate to the csharp directory and follow the steps below:
 
-- Set environment variable to use non-default app port 7000
+- Set environment variable to use non-default app port 7001
    ```bash
    #Linux/Mac OS:
-   export ASPNETCORE_URLS="http://localhost:7000"
+   export ASPNETCORE_URLS="http://localhost:7001"
    ```
 
    ```bash
    #Windows:
-   set ASPNETCORE_URLS=http://localhost:7000
+   set ASPNETCORE_URLS=http://localhost:7001
    ```
 
 <!-- STEP
@@ -115,13 +115,13 @@ output_match_mode: substring
 working_dir: "./csharp/bin/Debug/netcoreapp3.1"
 background: true
 env: 
-  ASPNETCORE_URLS: 'http://localhost:7000'
+  ASPNETCORE_URLS: 'http://localhost:7001'
 sleep: 2
 -->
 
 - Navigate to ./bin/Debug/netcoreapp3.1 and start Dapr using command:
    ```bash
-   dapr run --app-id subtractapp --app-port 7000 --dapr-http-port 3504 dotnet Subtract.dll
+   dapr run --app-id subtractapp --app-port 7001 --dapr-http-port 3504 dotnet Subtract.dll
    ```
 
 
@@ -179,10 +179,10 @@ working_dir: "./python"
 - Set environment variable to use non-default app port 5000
    ```bash
    #Linux/Mac OS:
-   export FLASK_RUN_PORT=5000
+   export FLASK_RUN_PORT=5001
    
    #Windows:
-   set FLASK_RUN_PORT=5000
+   set FLASK_RUN_PORT=5001
    ```
 
 <!-- STEP
@@ -196,14 +196,14 @@ name: "Run python app"
 working_dir: "./python"
 output_match_mode: substring
 background: true
-env:
-  FLASK_RUN_PORT: "5000"
 sleep: 2
+env:
+  FLASK_RUN_PORT: "5001"
 -->
 
 - Start dapr using the command:
    ```bash
-   dapr run --app-id multiplyapp --app-port 5000 --dapr-http-port 3501 flask run
+   dapr run --app-id multiplyapp --app-port 5001 --dapr-http-port 3501 flask run
    ```
 
 <!-- END_STEP -->
@@ -267,8 +267,8 @@ manual_pause_message: "Calculator APP running on http://localhost:8080. Please o
 expected_stdout_lines:
   - "86"
   - "18"
-  - "1.5294"
-  - "1768.0"
+  - "1.5294117647058822"
+  - "1768"
   - '"total":"54"'
 output_match_mode: substring
 name: "Curl test"
@@ -306,7 +306,7 @@ name: "Curl test"
    86
    18
    1.5294117647058822
-   1768.0
+   1768
    
    {"operation":null,"total":"54","next":null}
    ```
@@ -529,7 +529,7 @@ expected_stdout_lines:
   - "86"
   - "18"
   - "1.5294"
-  - "1768.0"
+  - "1768"
   - '"total":"54"'
 output_match_mode: substring
 name: "Curl test"
@@ -567,7 +567,7 @@ You should get the following output:
    86
    18
    1.5294117647058822
-   1768.0
+   1768
    
    {"operation":null,"total":"54","next":null}
    ```
@@ -611,18 +611,19 @@ Each service in this quickstart is written in a different programming language, 
 
 When the front-end server calls the respective operation services (see `server.js` code below), it doesn't need to know what IP address they live at or how they were built. Instead it calls their local dapr side-car by name, which knows how to invoke the method on the service, taking advantage of the platform’s service discovery mechanism, in this case Kubernetes DNS resolution.
 
-The code below shows calls to the “add” and “subtract” services via the Dapr URLs:
+The code below shows calls to the "add" and "subtract" services via the Dapr URLs:
 ```js
 const daprUrl = `http://localhost:${daprPort}/v1.0/invoke`;
 
 app.post('/calculate/add', async (req, res) => {
-  const addUrl = `${daprUrl}/addapp/method/add`;
-  req.pipe(request(addUrl)).pipe(res);
+  const appResponse = await axios.post(`${daprUrl}/addapp/method/add`, req.body);
+  return res.send(`${appResponse.data}`); 
 });
 
+
 app.post('/calculate/subtract', async (req, res) => {
-  const subtractUrl = `${daprUrl}/subtractapp/method/subtract`;
-  req.pipe(request(subtractUrl)).pipe(res);
+  const appResponse = await axios.post(`${daprUrl}/subtractapp/method/subtract`, req.body);
+  return res.send(`${appResponse.data}`); 
 });
 ...
 ```
@@ -657,6 +658,17 @@ Our client persists state by simply POSTing JSON key-value pairs (see `react-cal
       }
     });
 ```
+
+## [Optional Steps] VS Code Debugging
+
+If you are using Visual Studio Code, you can debug this application using the preconfigured launch.json and task.json files in the .vscode folder.
+The .vscode folder has already been modified in the project to allow users to launch a compound configuration called "Full Dapr App" which will run all applications and allow you to debug in VS Code.
+
+For more information on how to configure the files visit [How-To: Debug multiple Dapr applications](https://docs.dapr.io/developing-applications/ides/vscode/vscode-how-to-debug-multiple-dapr-apps/)
+
+> **Note**: You still need to edit your environment variables for Flask and ASPNETCORE_URLS
+**Note**: Dapr offers a preview [Dapr Visual Studio Code extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-dapr) for local development which enables users a variety of features related to better managing their Dapr applications and debugging of your Dapr applications for all supported Dapr languages which are .NET, Go, PHP, Python and Java.
+
 
 ## Next Steps
 
