@@ -74,6 +74,13 @@ resource keyVaultAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-1
   }
 }
 
+module serviceBusResources './servicebus.bicep' = {
+  name: 'servicebus-${resourceToken}'
+  params: {
+    location: location
+  }
+}
+
 module appInsightsResources './appinsights.bicep' = {
   name: 'appinsights-${resourceToken}'
   params: {
@@ -131,6 +138,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03
 
 output AZURE_COSMOS_CONNECTION_STRING_KEY string = 'AZURE-COSMOS-CONNECTION-STRING'
 output AZURE_KEY_VAULT_ENDPOINT string = keyVault.properties.vaultUri
+output SERVICEBUS_ENDPONT string = serviceBusResources.outputs.SERVICEBUS_ENDPOINT
 output APPINSIGHTS_INSTRUMENTATIONKEY string = appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.properties.loginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = containerRegistry.name

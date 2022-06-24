@@ -89,6 +89,8 @@ dapr stop --app-id order-processor
 
 4. Deploy to Azure for dev-test
 
+NOTE: make sure you have pre-reqs [here](https://github.com/Azure-Samples/todo-python-mongo-aca)
+
 ```bash
-azd up --template pubsub-dapr-python-servicebus-aca
+azd up
 ```
