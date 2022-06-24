@@ -86,3 +86,9 @@ dapr run --app-id checkout --components-path ../../../components/ -- python3 app
 dapr stop --app-id checkout
 dapr stop --app-id order-processor
 ```
+
+4. Deploy to Azure for dev-test
+
+```bash
+azd up --template pubsub-dapr-python-servicebus-aca
+```
