@@ -102,6 +102,8 @@ module checkout './checkout.bicep' = {
     containerRegistry
     appInsightsResources
     keyVault
+    keyVaultAccessPolicies
+    serviceBusResources
   ]
 }
 

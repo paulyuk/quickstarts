@@ -31,7 +31,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
 }
 
 resource orders 'Microsoft.App/containerApps@2022-01-01-preview' = {
-  name: 'ca-api-${resourceToken}'
+  name: 'ca-orders-${resourceToken}'
   location: location
   tags: union(tags, {
       'azd-service-name': 'api'
@@ -47,6 +47,12 @@ resource orders 'Microsoft.App/containerApps@2022-01-01-preview' = {
         external: true
         targetPort: 3100
         transport: 'auto'
+      }
+      dapr: {
+        enabled: true
+        appId: 'orders'
+        appProtocol: 'http'
+        appPort: 3100
       }
       secrets: [
         {
@@ -66,7 +72,7 @@ resource orders 'Microsoft.App/containerApps@2022-01-01-preview' = {
       containers: [
         {
           image: imageName
-          name: 'main'
+          name: 'orderssvc'
           env: [
             {
               name: 'APPINSIGHTS_INSTRUMENTATIONKEY'

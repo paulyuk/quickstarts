@@ -31,7 +31,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
 }
 
 resource checkout 'Microsoft.App/containerApps@2022-01-01-preview' = {
-  name: 'ca-api-${resourceToken}'
+  name: 'ca-checkout-${resourceToken}'
   location: location
   tags: union(tags, {
       'azd-service-name': 'api'
@@ -43,10 +43,10 @@ resource checkout 'Microsoft.App/containerApps@2022-01-01-preview' = {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: {
       activeRevisionsMode: 'single'
-      ingress: {
-        external: true
-        targetPort: 3100
-        transport: 'auto'
+      dapr: {
+        enabled: true
+        appId: 'checkout'
+        appProtocol: 'http'
       }
       secrets: [
         {
@@ -66,7 +66,7 @@ resource checkout 'Microsoft.App/containerApps@2022-01-01-preview' = {
       containers: [
         {
           image: imageName
-          name: 'main'
+          name: 'checkoutsvc'
           env: [
             {
               name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
@@ -101,4 +101,4 @@ resource keyVaultAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-1
   }
 }
 
-output CHECKOUT_URI string = 'https://${checkout.properties.configuration.ingress.fqdn}'
+output CHECKOUT_URI string = ''
