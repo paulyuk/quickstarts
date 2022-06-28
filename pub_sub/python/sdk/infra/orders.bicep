@@ -26,15 +26,15 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: 'appi-${resourceToken}'
 }
 
-resource api 'Microsoft.App/containerApps@2022-01-01-preview' existing = {
-  name: 'ca-api-${resourceToken}'
+resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
+  name: 'keyvault${resourceToken}'
 }
 
-resource web 'Microsoft.App/containerApps@2022-01-01-preview' = {
-  name: 'ca-web-${resourceToken}'
+resource orders 'Microsoft.App/containerApps@2022-01-01-preview' = {
+  name: 'ca-api-${resourceToken}'
   location: location
   tags: union(tags, {
-      'azd-service-name': 'web'
+      'azd-service-name': 'api'
     })
   identity: {
     type: 'SystemAssigned'
@@ -45,7 +45,7 @@ resource web 'Microsoft.App/containerApps@2022-01-01-preview' = {
       activeRevisionsMode: 'single'
       ingress: {
         external: true
-        targetPort: 80
+        targetPort: 3100
         transport: 'auto'
       }
       secrets: [
@@ -69,12 +69,12 @@ resource web 'Microsoft.App/containerApps@2022-01-01-preview' = {
           name: 'main'
           env: [
             {
-              name: 'REACT_APP_APPINSIGHTS_INSTRUMENTATIONKEY'
+              name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
               value: appInsights.properties.InstrumentationKey
             }
             {
-              name: 'REACT_APP_API_BASE_URL'
-              value: 'https://${api.properties.configuration.ingress.fqdn}'
+              name: 'AZURE_KEY_VAULT_ENDPOINT'
+              value: keyVault.properties.vaultUri
             }
           ]
         }
@@ -83,4 +83,22 @@ resource web 'Microsoft.App/containerApps@2022-01-01-preview' = {
   }
 }
 
-output WEB_URI string = 'https://${web.properties.configuration.ingress.fqdn}'
+resource keyVaultAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-11-01-preview' = {
+  name: '${keyVault.name}/add'
+  properties: {
+    accessPolicies: [
+      {
+        objectId: orders.identity.principalId
+        permissions: {
+          secrets: [
+            'get'
+            'list'
+          ]
+        }
+        tenantId: subscription().tenantId
+      }
+    ]
+  }
+}
+
+output ORDERS_URI string = 'https://${orders.properties.configuration.ingress.fqdn}'

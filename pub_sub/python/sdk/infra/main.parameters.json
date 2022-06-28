@@ -12,10 +12,10 @@
       "value": "${AZURE_PRINCIPAL_ID}"
     },
     "checkoutImageName": {
-      "value": "${SERVICE_API_IMAGE_NAME}"
+      "value": "${SERVICE_CHECKOUT_IMAGE_NAME}"
     },
-    "orderprocessorImageName": {
-      "value": "${SERVICE_WEB_IMAGE_NAME}"
+    "ordersImageName": {
+      "value": "${SERVICE_ORDERS_IMAGE_NAME}"
     }
   }
 }

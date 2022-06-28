@@ -30,7 +30,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
   name: 'keyvault${resourceToken}'
 }
 
-resource api 'Microsoft.App/containerApps@2022-01-01-preview' = {
+resource checkout 'Microsoft.App/containerApps@2022-01-01-preview' = {
   name: 'ca-api-${resourceToken}'
   location: location
   tags: union(tags, {
@@ -88,7 +88,7 @@ resource keyVaultAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-1
   properties: {
     accessPolicies: [
       {
-        objectId: api.identity.principalId
+        objectId: checkout.identity.principalId
         permissions: {
           secrets: [
             'get'
@@ -101,4 +101,4 @@ resource keyVaultAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-1
   }
 }
 
-output API_URI string = 'https://${api.properties.configuration.ingress.fqdn}'
+output CHECKOUT_URI string = 'https://${checkout.properties.configuration.ingress.fqdn}'

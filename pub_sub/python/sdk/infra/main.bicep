@@ -16,7 +16,7 @@ param principalId string = ''
 param checkoutImageName string = ''
 
 @description('The image name for the order-processor service')
-param orderprocessorImageName string = ''
+param ordersImageName string = ''
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
   name: '${name}-rg'
@@ -36,8 +36,8 @@ module resources './resources.bicep' = {
     location: location
     principalId: principalId
     resourceToken: resourceToken
-    apiImageName: checkoutImageName
-    webImageName: orderprocessorImageName
+    checkoutImageName: checkoutImageName
+    ordersImageName: ordersImageName
     tags: tags
   }
 }
@@ -46,7 +46,8 @@ output AZURE_KEY_VAULT_ENDPOINT string = resources.outputs.AZURE_KEY_VAULT_ENDPO
 output SERVICEBUS_ENDPOINT string = resources.outputs.SERVICEBUS_ENDPONT
 output APPINSIGHTS_INSTRUMENTATIONKEY string = resources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = resources.outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT
+output acr_login_server_endpoint string = resources.outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT
 output AZURE_CONTAINER_REGISTRY_NAME string = resources.outputs.AZURE_CONTAINER_REGISTRY_NAME
 output APP_CHECKOUT_BASE_URL string = resources.outputs.CHECKOUT_APP_URI
-output API_ORDER_BASE_URL string = resources.outputs.ORDER_API_URI
+output API_ORDER_BASE_URL string = resources.outputs.ORDERS_APP_URI
 output APP_APPINSIGHTS_INSTRUMENTATIONKEY string = resources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY

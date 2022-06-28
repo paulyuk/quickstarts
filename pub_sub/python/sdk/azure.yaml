@@ -9,7 +9,7 @@ services:
     dist: build
     language: js
     host: containerapp
-  order-processor:
+  orders:
     project: order-processor
     language: py
     host: containerapp

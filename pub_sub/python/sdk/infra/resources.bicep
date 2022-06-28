@@ -3,8 +3,8 @@ param location string
 param principalId string = ''
 param resourceToken string
 param tags object
-param apiImageName string = ''
-param webImageName string = ''
+param ordersImageName string = ''
+param checkoutImageName string = ''
 
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-01-01-preview' = {
   name: 'cae-${resourceToken}'
@@ -90,12 +90,12 @@ module appInsightsResources './appinsights.bicep' = {
   }
 }
 
-module checkoutImageName './checkout.bicep' = {
+module checkout './checkout.bicep' = {
   name: 'api-resources-${resourceToken}'
   params: {
     name: name
     location: location
-    imageName: apiImageName != '' ? apiImageName : 'nginx:latest'
+    imageName: checkoutImageName != '' ? checkoutImageName : 'nginx:latest'
   }
   dependsOn: [
     containerAppsEnvironment
@@ -105,12 +105,12 @@ module checkoutImageName './checkout.bicep' = {
   ]
 }
 
-module orderprocessorImageName './order-processor.bicep' = {
+module orders './orders.bicep' = {
   name: 'web-resources-${resourceToken}'
   params: {
     name: name
     location: location
-    imageName: webImageName != '' ? webImageName : 'nginx:latest'
+    imageName: ordersImageName != '' ? ordersImageName : 'nginx:latest'
   }
   dependsOn: [
     containerAppsEnvironment
@@ -142,5 +142,5 @@ output SERVICEBUS_ENDPONT string = serviceBusResources.outputs.SERVICEBUS_ENDPOI
 output APPINSIGHTS_INSTRUMENTATIONKEY string = appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.properties.loginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = containerRegistry.name
-output CHECKOUT_APP_URI string = checkoutImageName.outputs.API_URI
-output ORDER_API_URI string = orderprocessorImageName.outputs.WEB_URI
+output CHECKOUT_APP_URI string = checkout.outputs.CHECKOUT_URI
+output ORDERS_APP_URI string = orders.outputs.ORDERS_URI
