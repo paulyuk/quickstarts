@@ -34,7 +34,7 @@ resource orders 'Microsoft.App/containerApps@2022-01-01-preview' = {
   name: 'ca-orders-${resourceToken}'
   location: location
   tags: union(tags, {
-      'azd-service-name': 'api'
+      'azd-service-name': 'orders'
     })
   identity: {
     type: 'SystemAssigned'

@@ -34,7 +34,7 @@ resource checkout 'Microsoft.App/containerApps@2022-01-01-preview' = {
   name: 'ca-checkout-${resourceToken}'
   location: location
   tags: union(tags, {
-      'azd-service-name': 'api'
+      'azd-service-name': 'checkout'
     })
   identity: {
     type: 'SystemAssigned'
