@@ -7,7 +7,7 @@ services:
   checkout:
     project: checkout
     dist: build
-    language: js
+    language: py
     host: containerapp
   orders:
     project: order-processor

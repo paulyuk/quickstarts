@@ -9,7 +9,9 @@ param checkoutImageName string = ''
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-01-01-preview' = {
   name: 'cae-${resourceToken}'
   location: location
-  tags: tags
+  dependsOn: [
+    sb
+  ]
   properties: {
     appLogsConfiguration: {
       destination: 'log-analytics'
@@ -19,6 +21,28 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-01-01-
       }
     }
   }
+
+  resource daprComponent 'daprComponents@2022-03-01' = {
+    name: 'orderpubsub'
+    properties: {
+      componentType: 'pubsub.azure.servicebus'
+      version: 'v1'
+      secrets: [
+        {
+          name: 'sb-root-connectionstring'
+          value: listKeys('${sb.id}/AuthorizationRules/RootManageSharedAccessKey', sb.apiVersion).primaryConnectionString
+        }
+      ]
+      metadata: [
+        {
+          name: 'connectionString'
+          secretRef: 'sb-root-connectionstring'
+        }
+      ]
+      scopes: []
+    }
+  }
+
 }
 
 resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-12-01-preview' = {
@@ -74,9 +98,14 @@ resource keyVaultAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-1
   }
 }
 
+resource sb 'Microsoft.ServiceBus/namespaces@2018-01-01-preview' existing = {
+  name: serviceBusResources.name
+}
+
 module serviceBusResources './servicebus.bicep' = {
-  name: 'servicebus-${resourceToken}'
+  name: 'sb-${resourceToken}'
   params: {
+    resourceToken: resourceToken
     location: location
   }
 }
@@ -119,6 +148,8 @@ module orders './orders.bicep' = {
     containerRegistry
     appInsightsResources
     keyVault
+    keyVaultAccessPolicies
+    serviceBusResources
   ]
 }
 
