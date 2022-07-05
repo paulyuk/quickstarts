@@ -10,7 +10,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-01-01-
   name: 'cae-${resourceToken}'
   location: location
   dependsOn: [
-    sb
+    serviceBusResources
   ]
   properties: {
     appLogsConfiguration: {
@@ -30,7 +30,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-01-01-
       secrets: [
         {
           name: 'sb-root-connectionstring'
-          value: listKeys('${sb.id}/AuthorizationRules/RootManageSharedAccessKey', sb.apiVersion).primaryConnectionString
+          value: '${listKeys('${sb.id}/AuthorizationRules/RootManageSharedAccessKey', sb.apiVersion).primaryConnectionString};EntityPath=orders'
         }
       ]
       metadata: [
