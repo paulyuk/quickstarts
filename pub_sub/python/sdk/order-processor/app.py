@@ -29,4 +29,4 @@ def orders_subscriber():
         'ContentType': 'application/json'}
 
 
-app.run(app_port)
+app.run(port=app_port)
