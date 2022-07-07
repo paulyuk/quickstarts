@@ -6,7 +6,6 @@ metadata:
 services:
   checkout:
     project: checkout
-    dist: build
     language: js
     host: containerapp
   orders:
