@@ -1,40 +1,31 @@
 param resourceToken string
 param location string
-param skuName string = 'Basic'
-
-param queueNames array = [
-  'orders'
-]
-
-var deadLetterFirehoseQueueName = 'deadletterfirehose'
+param skuName string = 'Standard'
+param topicName string = 'orders'
 
 resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2018-01-01-preview' = {
   name: 'sb-${resourceToken}'
   location: location
   sku: {
     name: skuName
+    tier: skuName
+  }
+
+  resource topic 'topics@2022-01-01-preview' = {
+    name: topicName
+    properties: {
+      supportOrdering: true
+    }
+  
+    resource subscription 'subscriptions@2022-01-01-preview' = {
+      name: topicName
+      properties: {
+        deadLetteringOnFilterEvaluationExceptions: true
+        deadLetteringOnMessageExpiration: true
+        maxDeliveryCount: 10
+      }
+    }
   }
 }
-
-resource deadLetterFirehoseQueue 'Microsoft.ServiceBus/namespaces/queues@2018-01-01-preview' = {
-  name: deadLetterFirehoseQueueName
-  parent: serviceBusNamespace
-  properties: {
-    requiresDuplicateDetection: false
-    requiresSession: false
-    enablePartitioning: false
-  }
-}
-
-resource queues 'Microsoft.ServiceBus/namespaces/queues@2018-01-01-preview' = [for queueName in queueNames: {
-  parent: serviceBusNamespace
-  name: queueName
-  dependsOn: [
-    deadLetterFirehoseQueue
-  ]
-  properties: {
-    forwardDeadLetteredMessagesTo: deadLetterFirehoseQueueName
-  }
-}]
 
 output SERVICEBUS_ENDPOINT string = serviceBusNamespace.properties.serviceBusEndpoint

@@ -38,6 +38,10 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-01-01-
           name: 'connectionString'
           secretRef: 'sb-root-connectionstring'
         }
+        {
+          name: 'consumerID'
+          value: 'orders'
+        }
       ]
       scopes: []
     }
@@ -107,6 +111,7 @@ module serviceBusResources './servicebus.bicep' = {
   params: {
     resourceToken: resourceToken
     location: location
+    skuName: 'Standard'
   }
 }
 
