@@ -18,7 +18,7 @@ param checkoutImageName string = ''
 @description('The image name for the order-processor service')
 param ordersImageName string = ''
 
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2020-06-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: '${name}-rg'
   location: location
 }
