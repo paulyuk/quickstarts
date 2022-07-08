@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://azuresdkreleasepreview.blob.core.windows.net/azd/schema/azure.yaml.json
 
-name: pubsub-dapr-python-servicebus-aca
+name: pubsub-dapr-javascript-servicebus-aca
 metadata:
-  template: pubsub-dapr-python-servicebus-aca@0.0.1-beta
+  template: pubsub-dapr-javascript-servicebus-aca@0.0.1-beta
 services:
   checkout:
     project: checkout
