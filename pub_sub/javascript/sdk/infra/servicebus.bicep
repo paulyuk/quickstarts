@@ -2,22 +2,25 @@ param resourceToken string
 param location string
 param skuName string = 'Standard'
 param topicName string = 'orders'
+param tags object
 
-resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2018-01-01-preview' = {
+
+resource serviceBusNamespace 'Microsoft.ServiceBus/namespaces@2021-11-01' = {
   name: 'sb-${resourceToken}'
   location: location
+  tags: tags
   sku: {
     name: skuName
     tier: skuName
   }
 
-  resource topic 'topics@2022-01-01-preview' = {
+  resource topic 'topics' = {
     name: topicName
     properties: {
       supportOrdering: true
     }
   
-    resource subscription 'subscriptions@2022-01-01-preview' = {
+    resource subscription 'subscriptions' = {
       name: topicName
       properties: {
         deadLetteringOnFilterEvaluationExceptions: true

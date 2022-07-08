@@ -14,11 +14,11 @@ var tags = {
   'azd-env-name': name
 }
 
-resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-01-01-preview' existing = {
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-03-01' existing = {
   name: 'cae-${resourceToken}'
 }
 
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-12-01-preview' existing = {
+resource containerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01-preview' existing = {
   name: 'contreg${resourceToken}'
 }
 
@@ -26,11 +26,11 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' existing = {
   name: 'appi-${resourceToken}'
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
+resource keyVault 'Microsoft.KeyVault/vaults@2021-10-01' existing = {
   name: 'keyvault${resourceToken}'
 }
 
-resource orders 'Microsoft.App/containerApps@2022-01-01-preview' = {
+resource orders 'Microsoft.App/containerApps@2022-03-01' = {
   name: 'ca-orders-${resourceToken}'
   location: location
   tags: union(tags, {
@@ -89,7 +89,7 @@ resource orders 'Microsoft.App/containerApps@2022-01-01-preview' = {
   }
 }
 
-resource keyVaultAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-11-01-preview' = {
+resource keyVaultAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-10-01' = {
   name: '${keyVault.name}/add'
   properties: {
     accessPolicies: [
