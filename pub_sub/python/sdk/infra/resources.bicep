@@ -6,179 +6,93 @@ param tags object
 param ordersImageName string = ''
 param checkoutImageName string = ''
 
-resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-01-01-preview' = {
-  name: 'cae-${resourceToken}'
-  location: location
+module containerAppsResources './containerapps.bicep' = {
+  name: 'containerapps-resources'
+  params: {
+    location: location
+    tags: tags
+    resourceToken: resourceToken
+  }
+
   dependsOn: [
     serviceBusResources
+    logAnalyticsResources
   ]
-  properties: {
-    appLogsConfiguration: {
-      destination: 'log-analytics'
-      logAnalyticsConfiguration: {
-        customerId: logAnalyticsWorkspace.properties.customerId
-        sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
-      }
-    }
-  }
-
-  resource daprComponent 'daprComponents@2022-03-01' = {
-    name: 'orderpubsub'
-    properties: {
-      componentType: 'pubsub.azure.servicebus'
-      version: 'v1'
-      secrets: [
-        {
-          name: 'sb-root-connectionstring'
-          value: '${listKeys('${sb.id}/AuthorizationRules/RootManageSharedAccessKey', sb.apiVersion).primaryConnectionString};EntityPath=orders'
-        }
-      ]
-      metadata: [
-        {
-          name: 'connectionString'
-          secretRef: 'sb-root-connectionstring'
-        }
-        {
-          name: 'consumerID'
-          value: 'orders'
-        }
-      ]
-      scopes: []
-    }
-  }
-
 }
 
-resource containerRegistry 'Microsoft.ContainerRegistry/registries@2021-12-01-preview' = {
-  name: 'contreg${resourceToken}'
-  location: location
-  tags: tags
-  sku: {
-    name: 'Standard'
+module keyVaultResources './keyvault.bicep' = {
+  name: 'keyvault-resources'
+  params: {
+    location: location
+    tags: tags
+    resourceToken: resourceToken
+    principalId: principalId
   }
-  properties: {
-    adminUserEnabled: true
-    anonymousPullEnabled: false
-    dataEndpointEnabled: false
-    encryption: {
-      status: 'disabled'
-    }
-    networkRuleBypassOptions: 'AzureServices'
-    publicNetworkAccess: 'Enabled'
-    zoneRedundancy: 'Disabled'
-  }
-}
-
-resource keyVault 'Microsoft.KeyVault/vaults@2019-09-01' = {
-  name: 'keyvault${resourceToken}'
-  location: location
-  tags: tags
-  properties: {
-    tenantId: subscription().tenantId
-    sku: {
-      family: 'A'
-      name: 'standard'
-    }
-    accessPolicies: []
-  }
-
-}
-
-resource keyVaultAccessPolicies 'Microsoft.KeyVault/vaults/accessPolicies@2021-11-01-preview' = if (!empty(principalId)) {
-  name: '${keyVault.name}/add'
-  properties: {
-    accessPolicies: [
-      {
-        objectId: principalId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-        tenantId: subscription().tenantId
-      }
-    ]
-  }
-}
-
-resource sb 'Microsoft.ServiceBus/namespaces@2018-01-01-preview' existing = {
-  name: serviceBusResources.name
 }
 
 module serviceBusResources './servicebus.bicep' = {
-  name: 'sb-${resourceToken}'
+  name: 'sb-resources'
   params: {
-    resourceToken: resourceToken
     location: location
+    tags: tags
+    resourceToken: resourceToken
     skuName: 'Standard'
   }
 }
 
 module appInsightsResources './appinsights.bicep' = {
-  name: 'appinsights-${resourceToken}'
+  name: 'appinsights-resources'
   params: {
-    resourceToken: resourceToken
     location: location
     tags: tags
+    resourceToken: resourceToken
   }
 }
 
-module checkout './checkout.bicep' = {
-  name: 'api-resources-${resourceToken}'
+module checkoutResources './checkout.bicep' = {
+  name: 'api-resources'
   params: {
     name: name
     location: location
     imageName: checkoutImageName != '' ? checkoutImageName : 'nginx:latest'
   }
   dependsOn: [
-    containerAppsEnvironment
-    containerRegistry
+    containerAppsResources
     appInsightsResources
-    keyVault
-    keyVaultAccessPolicies
+    keyVaultResources
     serviceBusResources
   ]
 }
 
-module orders './orders.bicep' = {
-  name: 'web-resources-${resourceToken}'
+module ordersResources './orders.bicep' = {
+  name: 'web-resources'
   params: {
     name: name
     location: location
     imageName: ordersImageName != '' ? ordersImageName : 'nginx:latest'
   }
   dependsOn: [
-    containerAppsEnvironment
-    containerRegistry
+    containerAppsResources
     appInsightsResources
-    keyVault
-    keyVaultAccessPolicies
+    keyVaultResources
     serviceBusResources
   ]
 }
 
-resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
-  name: 'log-${resourceToken}'
-  location: location
-  tags: tags
-  properties: any({
-    retentionInDays: 30
-    features: {
-      searchVersion: 1
-    }
-    sku: {
-      name: 'PerGB2018'
-    }
-  })
+module logAnalyticsResources './loganalytics.bicep' = {
+  name: 'loganalytics-resources'
+  params: {
+    location: location
+    tags: tags
+    resourceToken: resourceToken
+  }
 }
 
-
 output AZURE_COSMOS_CONNECTION_STRING_KEY string = 'AZURE-COSMOS-CONNECTION-STRING'
-output AZURE_KEY_VAULT_ENDPOINT string = keyVault.properties.vaultUri
+output AZURE_KEY_VAULT_ENDPOINT string = keyVaultResources.outputs.AZURE_KEY_VAULT_ENDPOINT
 output SERVICEBUS_ENDPONT string = serviceBusResources.outputs.SERVICEBUS_ENDPOINT
 output APPINSIGHTS_INSTRUMENTATIONKEY string = appInsightsResources.outputs.APPINSIGHTS_INSTRUMENTATIONKEY
-output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.properties.loginServer
-output AZURE_CONTAINER_REGISTRY_NAME string = containerRegistry.name
-output CHECKOUT_APP_URI string = checkout.outputs.CHECKOUT_URI
-output ORDERS_APP_URI string = orders.outputs.ORDERS_URI
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerAppsResources.outputs.AZURE_CONTAINER_REGISTRY_ENDPOINT
+output AZURE_CONTAINER_REGISTRY_NAME string = containerAppsResources.outputs.AZURE_CONTAINER_REGISTRY_NAME
+output CHECKOUT_APP_URI string = checkoutResources.outputs.CHECKOUT_URI
+output ORDERS_APP_URI string = ordersResources.outputs.ORDERS_URI
