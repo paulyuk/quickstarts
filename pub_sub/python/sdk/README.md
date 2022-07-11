@@ -16,8 +16,10 @@ And one subscriber:
 
 ### Run Python message subscriber with Dapr
 
+1. Install dependencies: 
+
 <!-- STEP
-name: run
+name: Install python dependencies
 -->
 
 ```bash
@@ -49,7 +51,7 @@ dapr run --app-id order-processor --components-path ../../../components/ --app-p
 
 ### Run Python message publisher with Dapr
 
-1. Install dependencies: 
+3. Install dependencies: 
 
 <!-- STEP
 name: Install python dependencies
@@ -61,7 +63,7 @@ pip3 install -r requirements.txt
 ```
 <!-- END_STEP -->
 
-3. Run the Python publisher app with Dapr: 
+4. Run the Python publisher app with Dapr: 
 
 <!-- STEP
 name: Run python publisher
@@ -87,9 +89,9 @@ dapr stop --app-id checkout
 dapr stop --app-id order-processor
 ```
 
-4. Deploy to Azure for dev-test
+5. Deploy to Azure for dev-test
 
-NOTE: make sure you have pre-reqs [here](https://github.com/Azure-Samples/todo-python-mongo-aca)
+NOTE: make sure you have Azure Dev CLI pre-reqs [here](https://github.com/Azure-Samples/todo-python-mongo-aca)
 
 ```bash
 azd up

@@ -52,7 +52,7 @@ dapr run --app-id order-processor --components-path ../../../components/ --app-p
 <!-- END_STEP -->
 ### Run Dotnet message publisher with Dapr
 
-1. Navigate to the directory and install dependencies: 
+3. Navigate to the directory and install dependencies: 
 
 <!-- STEP
 name: Install Dotnet dependencies
@@ -64,7 +64,7 @@ dotnet restore
 dotnet build
 ```
 <!-- END_STEP -->
-2. Run the Dotnet publisher app with Dapr: 
+4. Run the Dotnet publisher app with Dapr: 
 
 <!-- STEP
 name: Run Dotnet publisher
@@ -89,4 +89,12 @@ dapr run --app-id checkout --components-path ../../../components/ -- dotnet run 
 
 ```bash
 dapr stop --app-id order-processor
+```
+
+5. Deploy to Azure for dev-test
+
+NOTE: make sure you have Azure Dev CLI pre-reqs [here](https://github.com/Azure-Samples/todo-python-mongo-aca)
+
+```bash
+azd up
 ```

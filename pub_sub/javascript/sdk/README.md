@@ -16,7 +16,7 @@ And one subscriber:
 
 ### Run Node message subscriber with Dapr
 
-1. Install dependencies: 
+1. Install dependencies in a new terminal: 
 
 <!-- STEP
 name: Install Node dependencies
@@ -27,10 +27,10 @@ cd ./order-processor
 npm install
 ```
 <!-- END_STEP -->
-3. Run the Node publisher app with Dapr: 
+2. Run the Node subscriber app with Dapr: 
 
 <!-- STEP
-name: Run Node publisher
+name: Run Node subscriber
 expected_stdout_lines:
   - '== APP == Subscriber received: {"orderId":2}'
   - "Exited App successfully"
@@ -42,14 +42,14 @@ sleep: 10
 -->
     
 ```bash
-dapr run --app-id checkout --components-path ../../../components/  --app-port 5001 -- node .
+dapr run --app-port 5001 --app-id order-processing --app-protocol http --dapr-http-port 3501 --components-path ../../../components -- npm run start
 ```
 
 <!-- END_STEP -->
 
 ### Run Node message publisher with Dapr
 
-1. Install dependencies: 
+3. Install dependencies in a new terminal: 
 
 <!-- STEP
 name: Install Node dependencies
@@ -60,7 +60,7 @@ cd ./checkout
 npm install
 ```
 <!-- END_STEP -->
-3. Run the Node publisher app with Dapr: 
+4. Run the Node publisher app with Dapr: 
 
 <!-- STEP
 name: Run Node publisher
@@ -76,7 +76,7 @@ sleep: 10
 -->
     
 ```bash
-dapr run --app-id checkout --components-path ../../../components/  --app-port 5001 -- node .
+dapr run --app-id checkout --app-protocol http --components-path ../../../components -- npm run start
 ```
 
 <!-- END_STEP -->
@@ -84,4 +84,12 @@ dapr run --app-id checkout --components-path ../../../components/  --app-port 50
 ```bash
 dapr stop --app-id checkout
 dapr stop --app-id order-processor
+```
+
+5. Deploy to Azure for dev-test
+
+NOTE: make sure you have Azure Dev CLI pre-reqs [here](https://github.com/Azure-Samples/todo-python-mongo-aca)
+
+```bash
+azd up
 ```
