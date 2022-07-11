@@ -45,14 +45,14 @@ resource orders 'Microsoft.App/containerApps@2022-03-01' = {
       activeRevisionsMode: 'single'
       ingress: {
         external: true
-        targetPort: 5001
+        targetPort: 7001
         transport: 'auto'
       }
       dapr: {
         enabled: true
         appId: 'orders'
         appProtocol: 'http'
-        appPort: 5001
+        appPort: 7001
       }
       secrets: [
         {
