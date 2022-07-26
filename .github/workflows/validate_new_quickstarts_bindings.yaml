@@ -1,5 +1,5 @@
 #
-# Copyright 2021 The Dapr Authors
+# Copyright 2022 The Dapr Authors
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -11,7 +11,7 @@
 # limitations under the License.
 #
 
-name: Validate PubSub
+name: Validate Bindings
 
 on:
   workflow_dispatch:
@@ -89,44 +89,59 @@ jobs:
           echo "PATH=$PATH:$HOME/.local/bin" >> $GITHUB_ENV
           pip3 install setuptools wheel
           pip3 install mechanical-markdown
-      - name: Validate Go http pubsub
+      - name: Set up Postgres
         run: |
-          pushd pub_sub/go/http
+          pushd bindings/db/
+          docker compose up -d
+          popd
+      - name: Validate Python http Bindings
+        run: |
+          pushd bindings/python/http
           make validate
           popd
-      - name: Validate Go sdk pubsub
+      - name: Validate Python sdk Bindings
         run: |
-          pushd pub_sub/go/sdk
+          pushd bindings/python/sdk
           make validate
           popd
-      - name: Validate JS http pubsub
+      - name: Validate Javascript http Bindings
         run: |
-          pushd pub_sub/javascript/http
+          pushd bindings/javascript/http
           make validate
           popd
-      - name: Validate JS sdk pubsub
-        run: |
-          pushd pub_sub/javascript/sdk
-          make validate
-          popd
-      # - name: Validate python http pubsub
+      # - name: Validate Javascript sdk Bindings
       #   run: |
-      #     pushd pub_sub/python/http
+      #     pushd bindings/javascript/sdk
       #     make validate
       #     popd
-      # - name: Validate python sdk pubsub
-      #   run: |
-      #     pushd pub_sub/python/sdk
-      #     make validate
-      #     popd
-      - name: Validate java http pubsub
+      - name: Validate Java http Bindings
         run: |
-          pushd pub_sub/java/http
+          pushd bindings/java/http
           make validate
           popd
-      - name: Validate java sdk pubsub
+      - name: Validate Java sdk Bindings
         run: |
-          pushd pub_sub/java/sdk
+          pushd bindings/java/sdk
+          make validate
+          popd
+      - name: Validate Go http Bindings
+        run: |
+          pushd bindings/go/http
+          make validate
+          popd
+      - name: Validate Go sdk Bindings
+        run: |
+          pushd bindings/go/sdk
+          make validate
+          popd
+      - name: Validate .NET http Bindings
+        run: |
+          pushd bindings/csharp/http
+          make validate
+          popd
+      - name: Validate .NET sdk Bindings
+        run: |
+          pushd bindings/csharp/sdk
           make validate
           popd
       - name: Linkcheck README.md

@@ -78,7 +78,11 @@ sleep: 10
 -->
     
 ```bash
+<<<<<<< HEAD
 dapr run --app-id checkout --app-protocol http --components-path ../../../components -- npm run start
+=======
+dapr run --app-id checkout --app-protocol http --dapr-http-port 3500 --components-path ../../../components -- npm run start
+>>>>>>> 9fc5d06fee2f2f2f68c7060c8c3dae588114f986
 ```
 
 <!-- END_STEP -->
