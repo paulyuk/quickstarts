@@ -13,11 +13,29 @@
         <maven.compiler.target>11</maven.compiler.target>
         <slf4jVersion>1.6.1</slf4jVersion>
     </properties>
+  <repositories>
+    <repository>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+            <id>java-sdk</id>
+            <name>Dapr Java SDK</name>
+            <url>https://github.com/dapr/java-sdk</url>
+            <layout>default</layout>
+        </repository>
+      </repositories>
     <dependencies>
         <dependency>
             <groupId>io.dapr</groupId>
             <artifactId>dapr-sdk</artifactId>
-            <version>1.7.1</version>
+            <version>1.9.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.projectreactor</groupId>
